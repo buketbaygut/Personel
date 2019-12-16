@@ -1,0 +1,37 @@
+<!-- LİSTE -->
+
+{% extends 'layout.html' %}
+
+{% block content %} {{ personel.name }}
+
+    {% if personels %}
+        
+            <div class="container">
+                    <table border=2  bordercolor="black" >
+                            <tr>
+                            <td width="400">İsim</td>
+                            <td width="400">Soyisim </td>
+                            <td width="400">Email</td>
+                            <td width="100">Düzenle</td>
+                            </tr>
+                            {% for personel in personels %}
+                            <tr>
+                            <td> {{ personel.name }} </td>
+                            <td> {{ personel.surname }} </td>
+                            <td> {{ personel.email }} </td>                            
+                            <td> <a href="{% url 'duzenle' %}" button type="button">Düzenle</button> </td>
+                            </tr>
+                            {% endfor %}
+                    </table>
+            </div>
+  
+
+    {% else %}
+        <div class="alert alert-warning">
+            <p>
+                No Personel
+            </p>
+        </div>
+    {% endif %}
+
+{% endblock %}

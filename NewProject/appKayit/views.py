@@ -67,11 +67,8 @@ def sil(request,pk):
     return render(request,'appKayit/index.html',{'form':form})
 
 def silPost(request,pk):
-    personel = get_object_or_404(Personel, pk=request.POST.get('id'))
-    form = PersonelForm(instance=personel)
-    if form.is_valid():
-        personel = form.save(commit=False)
-        personel.delete()
-        return render(request,'appKayit/index.html',{'form':form})
 
-    return render(request,'appKayit/index.html',{'form':form})
+    personel = Personel.objects.get(pk=pk)
+    personel.delete()
+    
+    return render(request,'appKayit/index.html')

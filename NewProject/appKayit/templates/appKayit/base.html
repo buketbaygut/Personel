@@ -16,12 +16,12 @@
                             <td width="100">Sil</td>
                             </tr>
                             {% for personel in personels %}
-                            <tr>
+                            <tr id="test">Silinecek tr</tr>
                             <td> {{ personel.name }} </td>
                             <td> {{ personel.surname }} </td>
                             <td> {{ personel.email }} </td>                            
                             <td> <a href="{% url 'duzenle' pk=personel.pk %}" button class="btn btn-primary btn-lg btn-block" type="button">Düzenle</button> </td>
-                            <td> <a href="{% url 'sil' pk=personel.pk %}" button class="btn btn-primary btn-lg btn-block" type="button">Sil</button></td>
+                            <td> <a href="{% url 'sil' pk=personel.pk %}" button class="btn btn-primary btn-lg btn-block" id="sil" type="button">Sil</button></td>
                             </tr>
                             {% endfor %}
                     </table>

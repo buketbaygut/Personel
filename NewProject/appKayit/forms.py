@@ -5,4 +5,4 @@ class PersonelForm(forms.ModelForm):
     class Meta:
         model = Personel
         fields = '__all__'
-        widgets={'id':forms.HiddenInput()}
+        widgets={'id':forms.HiddenInput(),'isPublished':forms.HiddenInput()}

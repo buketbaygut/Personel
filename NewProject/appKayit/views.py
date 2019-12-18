@@ -17,20 +17,6 @@ def index(request):
         return redirect('index')
     return render(request,'appKayit/index.html',{})
         
-
-
-# def duzenle(request):
-
-#     personels = Personel.objects.get(id=id)
-#     if request.method=='POST':
-#         personels.name = request.POST.get('name')
-#         personels.surname = request.POST.get('surname')
-#         personels.email = request.POST.get('email')
-#         personels.save()
-#         return redirect('index')
-#     else:
-#         return render(request,'appKayit/index.html',{})
-
 def base(request):
     personel = Personel.objects.all()
     context = {

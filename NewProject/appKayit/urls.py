@@ -3,11 +3,8 @@ from . import views
 
 urlpatterns = [
     path('',views.index,name = 'index'),
-    path('base',views.base,name = 'base'),
-    path('appKayit/<int:pk>/',views.personel_detail,name='personel_detail'),
-    path('appKayit/<int:pk>/duzenle/',views.duzenle,name='duzenle'),
-    path('appKayit/<int:pk>/sil',views.silPost,name='sil'),
-    path('appKayit/duzenle/',views.duzenlePost,name='duzenlePost'),
-    path('appKayit/sil/',views.silPost,name='silPost')
-
+    path('base/',views.base,name = 'base'),
+    path('delete_personel',views.delete_personel,name='delete_personel'),
+    path('base/editPersonel',views.editPersonel,name='editPersonel'),
+    path('base/getPersonels',views.getPersonel,name='getPersonels'),
 ]

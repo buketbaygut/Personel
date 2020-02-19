@@ -1,13 +1,44 @@
 <!-- LİSTE -->
-
 {% extends 'layout.html' %}
-
-{% block content %} 
-
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Düzenle</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="personel-form" id="personel_form" > {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="name">Adınız</label>
+            <input type="text" class="form-control" id="name" name="name" value="" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="surname">Soyadınız</label>
+            <input type="text" class="form-control" id="surname" name="surname" value="" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="email">Email <span class="text-muted">(Optional)</span></label>
+          <input type="email" class="form-control" id="email" name="email" value="" placeholder="you@example.com" required>
+        </div>
+        </form>
+      </div>
+        <hr class="mb-4">
+    <button class="btn btn-primary btn-lg btn-block" onclick="update_personel()" type="button">Kaydet</button>
+    </div>
+  </div>
+</div>
     {% if personels %}
-        
             <div class="container">
-                    <table border=2  bordercolor="black" >
+            <input style="display: none" id="gizliid">
+                    <table table id="example" class="display" border=2  bordercolor="black" >
+                        <thead>
                             <tr>
                             <td width="400">İsim</td>
                             <td width="400">Soyisim </td>
@@ -15,19 +46,11 @@
                             <td width="100">Düzenle</td>
                             <td width="100">Sil</td>
                             </tr>
-                            {% for personel in personels %}
-                            <tr id="test">Silinecek tr</tr>
-                            <td> {{ personel.name }} </td>
-                            <td> {{ personel.surname }} </td>
-                            <td> {{ personel.email }} </td>                            
-                            <td> <a href="{% url 'duzenle' pk=personel.pk %}" button class="btn btn-primary btn-lg btn-block" type="button">Düzenle</button> </td>
-                            <td> <a href="{% url 'sil' pk=personel.pk %}" button class="btn btn-primary btn-lg btn-block" id="sil" type="button">Sil</button></td>
-                            </tr>
-                            {% endfor %}
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
                     </table>
             </div>
-  
-
     {% else %}
         <div class="alert alert-warning">
             <p>
@@ -36,4 +59,79 @@
         </div>
     {% endif %}
 
+
+<script src="https://code.jquery.com/jquery-3.4.1.js" ></script>
+<script src="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"></script>
+
+<script>
+    $(document).ready(function () {
+
+    });
+    function delete_personel(id){
+
+        $.get("/delete_personel?id="+ parseInt(id) , function(response){
+           if(response['status']){
+               alert(('başarılı'))
+               getPersonels();
+           }
+           else{
+                console.log('başarısız!');
+           }
+        });
+
+    }
+
+    function duzenle_personel(id){
+        $("#gizliid").val(id);
+        $.get("editPersonel?id="+id,function (response) {
+            $("#name").val(response['name']);
+            $("#surname").val(response['surname']);
+            $("#email").val(response['email']);
+            $("#exampleModal").modal('show')
+        });
+    }
+
+
+    function update_personel() {
+        var name = $("#name").val();
+        var surname = $("#surname").val();
+        var email = $("#email").val();
+        var id = $("#gizliid").val();
+
+        $.ajax({
+            url:"editPersonel",
+            type:"POST",
+            data:{name,surname,email,id},
+            success:function (json) {
+                if(json.status){
+                    $('#name').val('');
+                    $('#surname').val('');
+                    $('#email').val('');
+                    $('#exampleModal').modal('hide');
+                    console.log(json);
+                    getPersonels();
+                }
+            },
+        })
+    }
+
+    $(document).ready(function(){
+        getPersonels()
+        $('#example').DataTable();
+    })
+
+    function getPersonels() {
+        $("#tbody").empty();
+        $.get('getPersonels',function (response) {
+             $.each(response.personels, function(index, value) {
+                console.log(value)
+                 $("#tbody").append('<tr><td>' + value.name + '</td><td>' + value.surname + '</td><td>' + value.email +
+                     '</td><td><button type="button" class="btn btn-primary btn-lg btn-block" ' +
+                     'onclick="duzenle_personel('+ value.id +')">Düzenle</button></td><td><button type="button" class="btn btn-primary btn-lg btn-block" ' +
+                     'onclick="delete_personel('+ value.id +')">Sil</button></td></tr>');
+            });
+        })
+    }
+</script>
 {% endblock %}
+

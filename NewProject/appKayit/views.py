@@ -1,8 +1,9 @@
+from django.http import JsonResponse, response
 from django.shortcuts import render,redirect,get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Personel
 from .forms import PersonelForm
-
-#from django.contrib.auth.models import Personel
 
 # Create your views here.
 def index(request):
@@ -16,8 +17,9 @@ def index(request):
         personels.save()
         return redirect('index')
     return render(request,'appKayit/index.html',{})
-        
+
 def base(request):
+
     personel = Personel.objects.all()
     context = {
         'personels': personel
@@ -25,36 +27,55 @@ def base(request):
 
     return render(request,'appKayit/base.html',context)
 
-def personel_detail(request,pk):
-    personel = get_object_or_404(Personel, pk=pk)
-    return render(request,'appKayit/duzenle.html',{'personel':personel})
-
-def duzenlePost(request):
-    personel = get_object_or_404(Personel, pk=request.POST.get('id'))  
-    form = PersonelForm(request.POST,instance=personel)
-    if form.is_valid():
-            personel = form.save(commit=False)
-            personel.name = request.POST.get('name')
-            personel.surname = request.POST.get('surname')
-            personel.email = request.POST.get('email')
-            personel.save()
-            return render(request,'appKayit/duzenle.html',{'form':form})
-
-    return render(request,'appKayit/duzenle.html',{'form':form})
-
-def duzenle(request,pk):
-    personel = get_object_or_404(Personel, pk=pk)
-    form = PersonelForm(instance=personel)
-    return render(request,'appKayit/duzenle.html',{'form':form})
-
-def sil(request,pk):
-    personel = get_object_or_404(Personel, pk=pk)
-    form = PersonelForm(instance=personel)
-    return render(request,'appKayit/index.html',{'form':form})
-
-def silPost(request,pk):
-
-    personel = Personel.objects.get(pk=pk)
+def delete_personel(request):
+    response = dict()
+    id = request.GET.get('id')
+    personel = Personel.objects.get(pk=id)
     personel.delete()
-    
-    return render(request,'appKayit/index.html')
+    response['status'] = True
+    return JsonResponse(response, safe=False)
+
+@csrf_exempt
+def editPersonel(request):
+    response = dict()
+    try:
+        if request.method == 'GET':
+            id = request.GET.get("id")
+            personel = Personel.objects.get(id=id)
+            response['name'] = personel.name
+            response['surname'] = personel.surname
+            response['email'] = personel.email
+            response['status'] = True
+        else:
+           id = request.POST.get("id")
+           personel = Personel.objects.get(id=id)
+           personel.name = request.POST.get("name")
+           personel.surname = request.POST.get("surname")
+           personel.email = request.POST.get("email")
+           personel.save()
+           response['status'] = True
+    except:
+        response['status'] = False
+    return JsonResponse(response, safe=False)
+
+
+def getPersonel(request):
+    response = dict()
+    personel_list = []
+    personel = Personel.objects.all()
+    for p in personel:
+        temp = dict()
+        temp['name'] = p.name
+        temp['surname'] = p.surname
+        temp['email'] = p.email
+        temp['id'] = p.id
+        personel_list.append(temp)
+
+    response['personels'] = personel_list
+    return JsonResponse(response, safe=False)
+
+
+
+
+
+
